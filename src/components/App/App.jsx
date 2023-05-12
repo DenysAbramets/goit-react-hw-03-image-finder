@@ -1,14 +1,16 @@
 import React from 'react';
 import SeacrhBar from '../SeacrchBar/Searchbar';
 import ImageGallery from '../ImageGallery/ImageGallery';
-import fetchImages from 'Api/Api';
+import { fetchImages, loadMoreDataFromAPI } from 'components/Api/Api';
 import Button from 'components/Button/Button';
 import { Container } from './App.styled';
+import Spinner from 'components/Loader/Loader';
 export class App extends React.Component {
   state = {
     value: '',
     images: [],
     page: 1,
+    loading: false,
   };
 
   handleFormSubmit = value => {
@@ -17,14 +19,26 @@ export class App extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.value !== this.state.value) {
-      fetchImages(this.state.value, this.state.page)
+      fetchImages(this.state.value)
         .then(images => {
-          console.log(images);
-          this.setState({ images });
+          this.setState({ images, page: 1 });
         })
-        .catch(err => console.log(err));
+        .catch(error => console.error(error));
     }
   }
+  handleLoadMore = () => {
+    this.setState({ loading: true });
+    loadMoreDataFromAPI()
+      .then(images => {
+        this.setState(prevState => ({
+          images: [...prevState.images, ...images],
+          page: prevState.page + 1,
+        }));
+      })
+      .finally(() => {
+        this.setState({ loading: false });
+      });
+  };
 
   render() {
     return (
@@ -33,7 +47,12 @@ export class App extends React.Component {
           <SeacrhBar onSubmit={this.handleFormSubmit} />
           <ImageGallery Images={this.state.images} />
 
-          {this.state.images.length !== 0 && <Button />}
+          {this.state.images.length !== 0 && (
+            <>
+              {this.state.loading && <Spinner />}
+              <Button PageChange={this.handleLoadMore} />
+            </>
+          )}
         </Container>
       </>
     );

@@ -1,4 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
+import { ReactComponent as SearchBar } from '../icons/seacrh.svg';
 import {
   FormSeacrh,
   Header,
@@ -13,7 +16,13 @@ class SeacrhBar extends React.Component {
   };
   submitSeacrh = event => {
     event.preventDefault();
+
+    if (this.state.value.trim() === '') {
+      return;
+    }
+    console.log(this.state.value);
     this.props.onSubmit(this.state.value);
+    this.setState({ value: '' });
   };
 
   render() {
@@ -22,6 +31,7 @@ class SeacrhBar extends React.Component {
         <FormSeacrh onSubmit={this.submitSeacrh}>
           <ButtonSearch type="submit">
             <Span>Search</Span>
+            {this.state.value && <SearchBar />}
           </ButtonSearch>
 
           <InputSearch
@@ -29,13 +39,18 @@ class SeacrhBar extends React.Component {
             autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
-            value={this.value}
-            onChange={event => this.setState({ value: event.target.value })}
+            value={this.state.value}
+            onChange={event =>
+              this.setState({ value: event.currentTarget.value })
+            }
           />
         </FormSeacrh>
       </Header>
     );
   }
 }
+SeacrhBar.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default SeacrhBar;

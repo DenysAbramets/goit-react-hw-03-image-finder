@@ -4,6 +4,8 @@
 import React from 'react';
 import Modal from '../Modal/Modal';
 import { Item, ImageStyled } from './ImageGalleryItem.styled';
+import PropTypes from 'prop-types';
+
 class ImageGalleryItem extends React.Component {
   state = {
     showModal: false,
@@ -30,5 +32,11 @@ class ImageGalleryItem extends React.Component {
     );
   }
 }
-
+ImageGalleryItem.propTypes = {
+  Card: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    largeImageURL: PropTypes.string.isRequired,
+    webformatURL: PropTypes.string.isRequired,
+  }),
+};
 export default ImageGalleryItem;
